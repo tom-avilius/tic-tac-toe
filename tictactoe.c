@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
 // the tic tac matrix.
 int grid[3][3];
 int cols=2, rows=2;
@@ -178,9 +177,9 @@ void initializeGrid() {
  * If the user selects a cell then the value in it is replaced by 1.
  * Otherwise the value remains 0.
 **/
-void fillGrid (int x, int y) {
+void fillGrid (int x, int y, int move) {
 
-  if (grid[x][y] == 1 || grid[x][y] == 2) {
+  if (grid[x][y] != 0) {
 
     gameInfo = 1;
     // TODO: Implement a waiting mechanism
@@ -217,31 +216,31 @@ int takeInput() {
   switch (input) {
 
     case 1: 
-      fillGrid(0, 0); 
+      fillGrid(0, 0, 1); 
       break;
     case 2:
-      fillGrid(0, 1);
+      fillGrid(0, 1, 1);
       break;
     case 3:
-      fillGrid(0, 2);
+      fillGrid(0, 2, 1);
       break;
     case 4:
-      fillGrid(1, 0);
+      fillGrid(1, 0, 1);
       break;
     case 5:
-      fillGrid(1, 1);
+      fillGrid(1, 1, 1);
       break;
     case 6:
-      fillGrid(1, 2);
+      fillGrid(1, 2, 1);
       break;
     case 7:
-      fillGrid(2, 0);
+      fillGrid(2, 0, 1);
       break;
     case 8:
-      fillGrid(2, 1);
+      fillGrid(2, 1, 1);
       break;
     case 9: 
-      fillGrid(2, 2);
+      fillGrid(2, 2, 1);
       break;
     default :
       gameInfo = 0;
@@ -269,30 +268,6 @@ int computerPlayer () {
   for (int i=0; i<2; i++) {
 
     for (int j=0; j<2; j++) {
-
-      if (i==j && grid[i][j] == grid[rows][cols] && grid[i][j] != 0) {
-
-        if (grid[rows-1][cols-1] != 1 && grid[rows-1][cols-1] != 2) {
-
-          grid[rows-1][cols-1] = 2;
-          return -1;
-        }
-      }
-
-      if (grid[i][j] == grid[j][i] && grid[i][j] != 0) {
-
-        if (i==0 && grid[j][j] == 0) {
-
-          grid[j][j] = 2;
-          return -1;
-        }
-
-        if (j==0 && grid[i][i] == 0) {
-
-          grid[i][i] = 2;
-          return -1;
-        }
-      }
 
       // successive column check
       if (grid[i][j] == grid[i][j+1] && grid[i][j] != 0) {
@@ -346,25 +321,63 @@ int computerPlayer () {
         grid[i][j+2] = 2;
         return 2;
       }
+
+      if (i==j && grid[i][j] == grid[rows][cols] && grid[i][j] != 0) {
+
+        if (grid[rows-1][cols-1] != 1 && grid[rows-1][cols-1] != 2) {
+
+          grid[rows-1][cols-1] = 2;
+          return -1;
+        }
+      }
+
+      if (grid[i][j] == grid[j][i] && grid[i][j] != 0) {
+
+        if (i==0 && grid[j][j] == 0) {
+
+          grid[j][j] = 2;
+          return -1;
+        }
+
+        if (j==0 && grid[i][i] == 0) {
+
+          grid[i][i] = 2;
+          return -1;
+        }
+      }
+
     }
   }
 
   return -1;
 }
 
+int minimax (int move) {
+  
+  if (gameState != 0) {
+
+    return -2;
+  }
+
+  
+
+  return 0;
+}
+
 int main () {
 
   system("clear");
-  initializeGrid();    
-  displayGrid();
 
-  while (gameState == 0) {
-    
-    takeInput();
-    setGameState(0);
-    computerPlayer();
-    setGameState(1);
-    displayGrid();
-    displayGameState();
-  }
+  /*initializeGrid();    */
+  /*displayGrid();*/
+  /**/
+  /*while (gameState == 0) {*/
+  /**/
+  /*  takeInput();*/
+  /*  setGameState(0);*/
+  /*  computerPlayer();*/
+  /*  setGameState(1);*/
+  /*  displayGrid();*/
+  /*  displayGameState();*/
+  /*}*/
 }
