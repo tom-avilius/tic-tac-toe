@@ -16,6 +16,18 @@
 **/
 int inputInfo = -1;
 
+/**
+ * @var gameInfo
+ * @type int
+ * @description Tells about the state of the game.
+ * If the the gameInfo is:
+ * 1 --> Then the player has won
+ * 2 --> Then the computer has won
+ * 3 --> Then the game ended in draw
+ * 0 --> Still Going On.
+**/
+int gameInfo = 0;
+
 
 
 /**
@@ -57,7 +69,7 @@ void initializeGrid (int grid[], int gridSize) {
  * @type int
  * @description The size of the grid.
 **/
-void input (int grid[], int gridSize) {
+int input (int grid[], int gridSize) {
 
   char buffer[256];
   int input, result; 
@@ -71,6 +83,7 @@ void input (int grid[], int gridSize) {
 
       // input not of type int
       inputInfo = 3;
+      return 0;
     }
   }
 
@@ -78,15 +91,18 @@ void input (int grid[], int gridSize) {
 
     // input value exceeds or preceeds the space available in the grid.
     inputInfo = 1;
+    return 0;
   } else if (grid[input-1] != 0) {
 
     // input is redundant
     inputInfo = 2;
+    return 0;
   } else {
 
     // normal input was provided and the value can be assigned to the grid.
     inputInfo = 0;
     grid[input-1] = 1;
+    return 0;
   }
 }
 
@@ -139,11 +155,16 @@ int main () {
   // initializing the grid with 0s.
   initializeGrid(grid, gridSize);
 
-  while (inputInfo != 0 || inputInfo == -1) {
+  while (gameInfo == 0) {
 
-    display(grid, gridSize);
-    input(grid, gridSize);
-    system("clear");
+    inputInfo = -1;
+
+    while (inputInfo != 0 || inputInfo == -1) {
+
+      display(grid, gridSize);
+      input(grid, gridSize);
+      system("clear");
+    }
   }
 
   display(grid, gridSize);
