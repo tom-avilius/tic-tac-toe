@@ -56,7 +56,7 @@ void initializeGrid (int grid[], int gridSize) {
 
 /**
  * @function input
- * @return void
+ * @return int (no-value)
  * @description Function to take input from the user.
  * Stores in the provided grid and checks for its validity.
  * Also modifies the global variable inputInfo
@@ -115,6 +115,14 @@ int input (int grid[], int gridSize) {
  * 0 is formatted as '*' meaning no input.
  * 1 is formatted as 'O' meaning computer input 
  * 2 is formatted as 'X' meaning user input.
+ *
+ * @params grid
+ * @type int[]
+ * @description The grid where the input would be stored.
+ *
+ * @params gridSize
+ * @type int
+ * @description The size of the grid.
 **/
 void display (int grid[], int gridSize) {
 
@@ -139,6 +147,30 @@ void display (int grid[], int gridSize) {
     else
       printf("\tO");
   }
+}
+
+
+/**
+ * @function setGameInfo
+ * @return void
+ * @description Sets the variable game info according to the state of the game.
+ * If the state is:
+ * 1 --> Then the player has won
+ * 2 --> Then the computer has won
+ * 3 --> Then the game ended in draw
+ * 0 --> Still Going On.
+ *
+ * @params grid
+ * @type int[]
+ * @description The grid where the input would be stored.
+ *
+ * @params gridSize
+ * @type int
+ * @description The size of the grid.
+**/
+void gameInfo (int grid[], int gridSize) {
+
+  if ()
 }
 
 
