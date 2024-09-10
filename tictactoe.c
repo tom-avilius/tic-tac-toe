@@ -31,6 +31,34 @@ int gameInfo = 0;
 
 
 /**
+ * @function isGridFilled
+ * @return int
+ * @description Checks if the grid has been filled completely.
+ * If return is:
+ * 1 --> the grid is filled
+ * 0 --> the grid is not filled.
+ *
+ * @params grid
+ * @type int[]
+ * @description The grid where the input would be stored.
+ *
+ * @params gridSize
+ * @type int
+ * @description The size of the grid.
+**/
+int isGridFilled (int grid[], int gridSize) {
+
+  for (int i=0; i<gridSize; i++) {
+
+    if (grid[i] == 0)
+      return 0;
+  }
+
+  return 1;
+}
+
+
+/**
  * @function initializeGrid
  * @return void
  * @description Function to fill in the provided grid with
@@ -128,11 +156,11 @@ void display (int grid[], int gridSize) {
 
   // checking if there were any errors in the input.
   if (inputInfo == 1)
-    printf("\nInput Exceeds or Preceeds the available grid. Try again..\n");
+    printf("Input Exceeds or Preceeds the available grid. Try again..\n");
   else if (inputInfo == 2)
-    printf("\nInput is Redundant. Try again..\n");
+    printf("Input is Redundant. Try again..\n");
   else if (inputInfo == 3) 
-    printf("\nInput is not a number. Try again..\n");
+    printf("Input is not a number. Try again..\n");
 
   // displaying the matrix
   for (int i=0; i<gridSize; i++) {
@@ -146,6 +174,20 @@ void display (int grid[], int gridSize) {
       printf("\tX");
     else
       printf("\tO");
+  }
+
+  // if the game ends then the ending msg is printed.
+  if (gameInfo == 1) {
+
+    // the player wins
+    printf("\nYou win!");
+  } else if (gameInfo == 2) {
+
+    // the computer wins
+    printf("\nThe Computer wins!");
+  } else if (gameInfo == 3) {
+
+    printf("\nDraw");
   }
 }
 
@@ -167,10 +209,53 @@ void display (int grid[], int gridSize) {
  * @params gridSize
  * @type int
  * @description The size of the grid.
+ *
+ * @params move
+ * @type int
+ * @description Denotes the current move positions, ie, whose move it is.
+ * If it is:
+ * 1 --> Player's Move
+ * 2 --> Computer's Move
 **/
-void gameInfo (int grid[], int gridSize) {
+void setGameInfo (int grid[], int gridSize, int move) {
+  
+  if (isGridFilled(grid, gridSize) == 1) {
 
-  if ()
+    // the game ends in a draw
+    gameInfo = 3;
+  } else {
+
+    // check the columns
+    for (int i=0; i<3; i++) {
+
+      if (grid[i] != 0) {
+
+        if(grid[i] == grid[i+3] && grid[i] == grid[i+6]) {
+          gameInfo = move == 1 ? 1 : 2; 
+        }
+      }
+    }
+
+    //check rows
+    for (int i=0; i<gridSize; i=i+3) {
+
+      if (grid[i] != 0) {
+
+        if(grid[i] == grid[i+1] && grid[i] == grid[i+2]) {
+
+          gameInfo = move == 1 ? 1: 2;
+        }
+      }
+    }
+
+    // check the primary and secondary diagonal
+    int i = 0;
+    if (grid[i] == grid[i+4] && grid[i] == grid[i+8] && grid[i] != 0)
+      gameInfo = move == 1 ? 1 : 2;
+    i = 2;
+    if (grid[i] == grid[i+2] && grid[i] == grid[i+4] && grid[i] != 0)
+      gameInfo = move == 1 ? 1 : 2;
+  }
 }
 
 
@@ -197,7 +282,9 @@ int main () {
       input(grid, gridSize);
       system("clear");
     }
+    setGameInfo(grid, gridSize, 1);
   }
 
   display(grid, gridSize);
+  printf("\n");
 }
