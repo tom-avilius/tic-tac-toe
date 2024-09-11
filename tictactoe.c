@@ -34,9 +34,7 @@ int gameInfo = 0;
  * @function isGridFilled
  * @return int
  * @description Checks if the grid has been filled completely.
- * If return is:
- * 1 --> the grid is filled
- * 0 --> the grid is not filled.
+ * It return the number of empty cells.
  *
  * @params grid
  * @type int[]
@@ -48,13 +46,15 @@ int gameInfo = 0;
 **/
 int isGridFilled (int grid[], int gridSize) {
 
+  int count = 0;
+
   for (int i=0; i<gridSize; i++) {
 
     if (grid[i] == 0)
-      return 0;
+      count++;
   }
 
-  return 1;
+  return count;
 }
 
 
@@ -219,7 +219,7 @@ void display (int grid[], int gridSize) {
 **/
 int setGameInfo (int grid[], int gridSize, int move) {
   
-  if (isGridFilled(grid, gridSize) == 1) {
+  if (isGridFilled(grid, gridSize) == 0) {
 
     // the game ends in a draw
     gameInfo = 3;
@@ -233,9 +233,17 @@ int setGameInfo (int grid[], int gridSize, int move) {
       if (grid[i] != 0) {
 
         if(grid[i] == grid[i+3] && grid[i] == grid[i+6]) {
-          gameInfo = move == 1 ? 1 : 2;
-          // a victory returns 1
-          return 1;
+          
+          if (move == 1) {
+
+            gameInfo = 1;
+            // loss for the computer
+            return -1;
+          } else if (move == 2) {
+        
+            gameInfo = 2;
+            return 1;
+          }
         }
       }
     }
@@ -247,8 +255,16 @@ int setGameInfo (int grid[], int gridSize, int move) {
 
         if(grid[i] == grid[i+1] && grid[i] == grid[i+2]) {
 
-          gameInfo = move == 1 ? 1: 2;
-          return 1;
+          if (move == 1) {
+
+            gameInfo = 1;
+            // loss for the computer
+            return -1;
+          } else if (move == 2) {
+        
+            gameInfo = 2;
+            return 1;
+          }
         }
       }
     }
@@ -257,17 +273,35 @@ int setGameInfo (int grid[], int gridSize, int move) {
     int i = 0;
     if (grid[i] == grid[i+4] && grid[i] == grid[i+8] && grid[i] != 0) {
      
-      gameInfo = move == 1 ? 1 : 2;
-      return 1;
+      if (move == 1) {
+
+        gameInfo = 1;
+        // loss for the computer
+        return -1;
+      } else if (move == 2) {
+        
+        gameInfo = 2;
+        return 1;
+      }
     }
 
     i = 2;
     if (grid[i] == grid[i+2] && grid[i] == grid[i+4] && grid[i] != 0) {
-      
-      gameInfo = move == 1 ? 1 : 2;
-      return 1;
+     
+      if (move == 1) {
+
+        gameInfo = 1;
+        // loss for the computer
+        return -1;
+      } else if (move == 2) {
+        
+        gameInfo = 2;
+        return 1;
+      }
     }
   }
+
+  return 0;
 }
 
 
