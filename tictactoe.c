@@ -325,6 +325,10 @@ int minimax (int grid[], int gridSize, int move) {
   while (grid[i] == 0)
     i++;
 
+  move = move % 2 == 0 ? 2 : 1; 
+  
+  grid[i] = move;
+  minimax(grid, gridSize, ++move);
 }
 
 
