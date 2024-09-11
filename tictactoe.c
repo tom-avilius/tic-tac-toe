@@ -194,7 +194,7 @@ void display (int grid[], int gridSize) {
 
 /**
  * @function setGameInfo
- * @return void
+ * @return int (used by minimax algo)
  * @description Sets the variable game info according to the state of the game.
  * If the state is:
  * 1 --> Then the player has won
@@ -217,12 +217,14 @@ void display (int grid[], int gridSize) {
  * 1 --> Player's Move
  * 2 --> Computer's Move
 **/
-void setGameInfo (int grid[], int gridSize, int move) {
+int setGameInfo (int grid[], int gridSize, int move) {
   
   if (isGridFilled(grid, gridSize) == 1) {
 
     // the game ends in a draw
     gameInfo = 3;
+    // a draw game is a neutral result, so the minimax algo would it treat it as such
+    return 0; 
   } else {
 
     // check the columns
@@ -231,7 +233,9 @@ void setGameInfo (int grid[], int gridSize, int move) {
       if (grid[i] != 0) {
 
         if(grid[i] == grid[i+3] && grid[i] == grid[i+6]) {
-          gameInfo = move == 1 ? 1 : 2; 
+          gameInfo = move == 1 ? 1 : 2;
+          // a victory returns 1
+          return 1;
         }
       }
     }
@@ -244,18 +248,33 @@ void setGameInfo (int grid[], int gridSize, int move) {
         if(grid[i] == grid[i+1] && grid[i] == grid[i+2]) {
 
           gameInfo = move == 1 ? 1: 2;
+          return 1;
         }
       }
     }
 
     // check the primary and secondary diagonal
     int i = 0;
-    if (grid[i] == grid[i+4] && grid[i] == grid[i+8] && grid[i] != 0)
+    if (grid[i] == grid[i+4] && grid[i] == grid[i+8] && grid[i] != 0) {
+     
       gameInfo = move == 1 ? 1 : 2;
+      return 1;
+    }
+
     i = 2;
-    if (grid[i] == grid[i+2] && grid[i] == grid[i+4] && grid[i] != 0)
+    if (grid[i] == grid[i+2] && grid[i] == grid[i+4] && grid[i] != 0) {
+      
       gameInfo = move == 1 ? 1 : 2;
+      return 1;
+    }
   }
+}
+
+
+/****/
+int minimax () {
+
+  
 }
 
 
