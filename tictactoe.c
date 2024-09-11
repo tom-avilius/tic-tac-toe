@@ -301,14 +301,29 @@ int setGameInfo (int grid[], int gridSize, int move) {
     }
   }
 
-  return 0;
+  return -2;
 }
 
 
 /****/
-int minimax () {
+int minimax (int grid[], int gridSize, int move) {
 
-  
+  int score = setGameInfo(grid, gridSize, move);
+
+  if (score == 0) {
+
+    // the game ends in a draw.
+    return 0; 
+  } else if (score != -2) {
+
+    score = score * isGridFilled(grid, gridSize);
+    return score;
+  }
+
+  // finding an empty cell;
+  int i = 0;
+  while (grid[i] == 0)
+    i++;
 }
 
 
