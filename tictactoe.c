@@ -324,6 +324,46 @@ int minimax (int grid[], int gridSize, int move) {
   int i = 0;
   while (grid[i] == 0)
     i++;
+
+}
+
+
+/**
+ * @function copyGrid
+ * @return int 
+ * @description
+ * to return the created copy of the original grid
+ *
+ * @params grid[]
+ * @type int
+ * @description The original grid.
+ *
+ * @params gridSize
+ * @type int
+ * @description The grid Size.
+**/  
+int* copyGrid (int grid[], int gridSize) {
+
+  int i = 0;
+  int* copyArray = (int*) malloc(gridSize * sizeof(int));
+
+  while (i < gridSize) {
+    
+    copyArray[i] = grid[i];
+    i++;
+  }
+
+  return copyArray;
+}
+
+void arrayCopy (int array[], int grid[], int gridSize) {
+
+  int i = 0;
+  while (i < gridSize) {
+
+    array[i] = grid[i];
+    i++;
+  }
 }
 
 
@@ -336,6 +376,7 @@ int main () {
   int gridSize = 9;
   // the grid to store the tic tac toe game
   int grid[gridSize];
+  int copyArray[gridSize];
 
   // initializing the grid with 0s.
   initializeGrid(grid, gridSize);
@@ -348,6 +389,8 @@ int main () {
 
       display(grid, gridSize);
       input(grid, gridSize);
+      arrayCopy(copyArray, grid, gridSize);
+      minimax(copyArray ,gridSize, 2);
       system("clear");
     }
     setGameInfo(grid, gridSize, 1);
