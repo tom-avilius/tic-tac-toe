@@ -13,10 +13,6 @@
 
 
 
-int bestScore = 0;
-
-
-
 void initializeGrid (int grid[], int gridSize, int value);
 void display (int grid[], int gridSize);
 int evaluate (int grid[], int gridSize, int move);
