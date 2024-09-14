@@ -168,6 +168,24 @@ int evaluate (int grid[], int gridSize, int move) {
 }
 
 
+/**
+ * @function isDraw
+ * @return int
+ * @description Checks whether the game is drawn or not. Evaluate funtion
+ * should be called prior to calling isDraw function.
+ *
+ * If the return is:
+ * 1 --> Game is drawn
+ * 0 --> Game not drawn
+ *
+ * @params grid
+ * @type int[]
+ * @description The tic tac toe grid.
+ *
+ * @params gridSize
+ * @type int
+ * @description The tictactoe grid size.
+**/
 // WARN: The function would return an incorrect value if called before
 // evaluate function, because it does not check if any player has won yet.
 int isDraw (int grid[], int gridSize) {
@@ -181,6 +199,19 @@ int isDraw (int grid[], int gridSize) {
 }
 
 
+/**
+ * @function freeCells
+ * @return int
+ * @description Returns the number of empty cells.
+ *
+ * @params grid
+ * @type int[]
+ * @description The tic tac toe grid.
+ *
+ * @params gridSize
+ * @type int
+ * @description The tictactoe grid size.
+**/
 int freeCells (int grid[], int gridSize) {
 
   int count = 0;
@@ -269,6 +300,15 @@ void initializeGrid (int grid[], int gridSize, int value) {
 }
 
 
+/**
+ * @function displayStatus
+ * @return void
+ * @description Displays the status of the input.
+ *
+ * @params code
+ * @type int
+ * @description The input status code.
+**/
 void displayStatus (int code) {
 
   if (code == Redundant_Input)
@@ -280,6 +320,24 @@ void displayStatus (int code) {
 }
 
 
+/**
+ * @function displayResult
+ * @return void
+ * @description Displays the result of the game along with the grid,
+ * one last time.
+ *
+ * @params code
+ * @type int
+ * @description The game status code.
+ *
+ * @params grid
+ * @type int[]
+ * @description The tic tac toe grid.
+ *
+ * @params gridSize
+ * @type int
+ * @description The tictactoe grid size.
+**/
 void displayResult (int code, int grid[], int gridSize) {
 
   if (code == Computer_Wins) {
@@ -295,6 +353,29 @@ void displayResult (int code, int grid[], int gridSize) {
 }
 
 
+/**
+ * @function minimax
+ * @return int
+ * @description Implementation of the minimax algorithm to decide the most 
+ * optimal solution for the AI.
+ *
+ * @params move
+ * @type int
+ * @description Denotes whose move it is.
+ *
+ * @params depth
+ * @type int
+ * @description Denotes the depth at which the minimax algorithm
+ * has reached.
+ *
+ * @params grid
+ * @type int[]
+ * @description The tic tac toe grid.
+ *
+ * @params gridSize
+ * @type int
+ * @description The tictactoe grid size.
+**/
 int minimax (int grid[], int gridSize, int move, int depth) {
 
   move = (move%2 == 0) ? Computer_Input : User_Input;
@@ -344,6 +425,20 @@ int minimax (int grid[], int gridSize, int move, int depth) {
 }
 
 
+/**
+ * @function computerInput
+ * @return int
+ * @description Makes the computer's move, optimally, 
+ * using the minimax algorithm.
+ *
+ * @params grid
+ * @type int[]
+ * @description The tic tac toe grid.
+ *
+ * @params gridSize
+ * @type int
+ * @description The tictactoe grid size.
+**/
 int computerInput (int grid[], int gridSize) {
 
   int bestScore = -1000;
@@ -368,3 +463,4 @@ int computerInput (int grid[], int gridSize) {
   grid[bestMove] = Computer_Input;
   return bestMove;
 }
+
