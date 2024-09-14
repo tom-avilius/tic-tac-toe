@@ -4,8 +4,11 @@
 #define User_Input 1
 #define Computer_Input 2
 #define User_Wins -1
-#define Computer_Wins +1
-#define Draw 0
+#define Computer_Wins 1
+#define Normal_Input 0
+#define Invalid_Input 1
+#define Redundant_Input 2
+#define NaN_Input 3
 
 
 
@@ -13,6 +16,8 @@ void display (int grid[], int gridSize);
 int evaluate (int grid[], int gridSize, int move);
 int checkDraw (int grid[], int gridSize);
 int freeCells (int grid[], int gridSize);
+int userInput (int grid[], int gridSize);
+int computerInput (int grid[], int gridSize);
 
 
 
@@ -147,3 +152,50 @@ int freeCells (int grid[], int gridSize) {
 
   return count;
 }
+
+
+/**
+ * @function input
+ * @return 
+ * @description Function to take input from the user.
+ * Stores in the provided grid and checks for its validity.
+ * Returns the status of input.
+ *
+ * If the return value is -
+ * 0 -> Normal Input
+ * 1 -> Input Exceeds or Preceeds the available grid index.
+ * 2 -> The input is redundant.
+ * 3 -> The input is not of type int.
+ *
+ * @params grid
+ * @type int[]
+ * @description The grid where the input would be stored.
+ *
+ * @params gridSize
+ * @type int
+ * @description The size of the grid.
+**/
+int input (int grid[], int gridSize) {
+
+  char buffer[256];
+  int input, result; 
+
+  printf("\n\nYour Move: ");
+
+  if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+
+    result = sscanf(buffer, "%d" ,&input);
+    if (result != 1) 
+      return NaN_Input;       // input not of type int
+  }
+
+  if (input > gridSize || input < 1)
+    return Invalid_Input;     // input value exceeds or preceeds the space available in the grid.
+  else if (grid[input-1] != 0)
+    return Redundant_Input;     // input is redundant
+   
+  // provided input was valid
+  grid[input-1] = 1;
+  return Normal_Input;
+}
+
