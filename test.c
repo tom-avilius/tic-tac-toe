@@ -1,7 +1,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/ucontext.h>
 
 #define User_Input 1
 #define Computer_Input 2
@@ -21,7 +20,7 @@ int bestScore = 0;
 void initializeGrid (int grid[], int gridSize, int value);
 void display (int grid[], int gridSize);
 int evaluate (int grid[], int gridSize, int move);
-int checkDraw (int grid[], int gridSize);
+int isDraw (int grid[], int gridSize);
 int freeCells (int grid[], int gridSize);
 int userInput (int grid[], int gridSize);
 int computerInput (int grid[], int gridSize);
@@ -54,10 +53,21 @@ int main () {
       inputStatus = userInput(grid, gridSize);
     }
     gameStatus = evaluate(grid, gridSize, 1);
-  }
+    if (isDraw(grid, gridSize) == 1) {
 
-  display(grid, gridSize);
-  displayResult(gameStatus);
+      printf("The game is draw.");
+      exit(0);
+    }
+    displayResult(gameStatus);
+    computerInput(grid, gridSize);
+    gameStatus = evaluate(grid, gridSize, 2);
+    if (isDraw(grid, gridSize) == 1) {
+
+      printf("The game is draw.");
+      exit(0);
+    }
+    displayResult(gameStatus);
+  }
 }
 
 
@@ -293,6 +303,9 @@ int minimax (int grid[], int gridSize, int move, int depth) {
   } else if (score == User_Wins) {
 
     return depth - 10;
+  } else if (isDraw(grid, gridSize) == 1) {
+
+    return 0;
   }
 
   if (move%2 == 0) {
@@ -324,4 +337,30 @@ int minimax (int grid[], int gridSize, int move, int depth) {
     }
     return bestScore;
   }
+}
+
+
+int computerInput (int grid[], int gridSize) {
+
+  int bestScore = -1000;
+  int bestMove = -111;
+
+  for (int i=0; i<gridSize; i++) {
+
+    if (grid[i] == 0) {
+
+      grid[i] = Computer_Input;
+      int score = minimax(grid, gridSize, 1, 0);
+      grid[i] = 0;
+
+      if (score > bestScore) {
+
+        bestScore = score;
+        bestMove = i;
+      }
+    }
+  }
+
+  grid[bestMove] = Computer_Input;
+  return bestMove;
 }
