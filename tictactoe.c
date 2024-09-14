@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int bestScore;
 
 
 /**
@@ -64,6 +65,9 @@ int isGridFilled (int grid[], int gridSize) {
  * @description Function to fill in the provided grid with
  * initial values.
  *
+ * @param value
+ * @type int
+ * @description Value to be initialized with
  * @param grid
  * @type int[]
  * @description The grid to fill in with the initial values.
@@ -72,12 +76,12 @@ int isGridFilled (int grid[], int gridSize) {
  * @type int
  * @description The size of the grid.
 **/
-void initializeGrid (int grid[], int gridSize) {
+void initializeGrid (int grid[], int gridSize, int value) {
 
   for (int i=0; i<gridSize; i++) {
 
-    // fill in with 0s to indicate no input
-    grid[i] = 0;
+    // fill in with value to indicate no input
+    grid[i] = value;
   }
 }
 
@@ -218,7 +222,7 @@ void display (int grid[], int gridSize) {
  * 2 --> Computer's Move
 **/
 int setGameInfo (int grid[], int gridSize, int move) {
-  
+
   if (isGridFilled(grid, gridSize) == 0) {
 
     // the game ends in a draw
@@ -304,70 +308,154 @@ int setGameInfo (int grid[], int gridSize, int move) {
   return -2;
 }
 
+// Evaluate the board and return score: +1 (X wins), -1 (O wins), 0 (no winner)
+int evaluate(int grid[], int gridSize, int move) {
+
+  
+  /*if (isGridFilled(grid, gridSize) != 0) {*/
+
+    // check the columns
+    for (int i=0; i<3; i++) {
+
+      if (grid[i] != 0) {
+
+        if(grid[i] == grid[i+3] && grid[i] == grid[i+6]) {
+          
+          if (move == 1) {
+
+            // loss for the computer
+            return -1;
+          } else if (move == 2) {
+        
+            return 1;
+          }
+        }
+      }
+    }
+
+    //check rows
+    for (int i=0; i<gridSize; i=i+3) {
+
+      if (grid[i] != 0) {
+
+        if(grid[i] == grid[i+1] && grid[i] == grid[i+2]) {
+
+          if (move == 1) {
+
+            // loss for the computer
+            return -1;
+          } else if (move == 2) {
+        
+            return 1;
+          }
+        }
+      }
+    }
+
+    // check the primary and secondary diagonal
+    int i = 0;
+    if (grid[i] == grid[i+4] && grid[i] == grid[i+8] && grid[i] != 0) {
+     
+      if (move == 1) {
+
+        // loss for the computer
+        return -1;
+      } else if (move == 2) {
+        
+        return 1;
+      }
+    }
+
+    i = 2;
+    if (grid[i] == grid[i+2] && grid[i] == grid[i+4] && grid[i] != 0) {
+     
+      if (move == 1) {
+
+        // loss for the computer
+        return -1;
+      } else if (move == 2) {
+        
+        return 1;
+      }
+    }
+  /*} else {*/
+
+    // a draw game is a neutral result, so the minimax algo would it treat it as such
+    return 0;
+  /*}*/
+
+}
+
 
 /****/
 int minimax (int grid[], int gridSize, int move) {
 
-  int score = setGameInfo(grid, gridSize, move);
+  move = move%2 == 0 ? 2 : 1;
+  int score = evaluate(grid, gridSize, move);
 
   if (score == 0) {
 
-    // the game ends in a draw.
-    return 0; 
-  } else if (score != -2) {
+  if (move%2 == 0) {
 
-    score = score * isGridFilled(grid, gridSize);
-    return score;
+    bestScore = -1000;
+
+    for (int i=0; i<gridSize; i++) {
+
+      if (grid[i] == 0) {
+
+        grid[i] = 2;
+        int score = minimax(grid, gridSize, move+1);
+        grid[i] = 0;
+        bestScore = (score > bestScore) ? score : bestScore;
+      }
+    }
+  } else {
+
+    bestScore = 1000;
+
+    for (int i=0; i<gridSize; i++) {
+
+      if (grid[i] == 0) {
+
+        grid[i] = 1;
+        int score = minimax(grid, gridSize, move+1);
+        grid[i] = 0;
+        bestScore = (score < bestScore) ? score : bestScore;
+      }
+    }
+  }
   }
 
-  // finding an empty cell;
-  int i = 0;
-  while (grid[i] == 0)
-    i++;
-
-  move = move % 2 == 0 ? 2 : 1; 
-  
-  grid[i] = move;
-  minimax(grid, gridSize, ++move);
+  return bestScore;
 }
 
 
-/**
- * @function copyGrid
- * @return int 
- * @description
- * to return the created copy of the original grid
- *
- * @params grid[]
- * @type int
- * @description The original grid.
- *
- * @params gridSize
- * @type int
- * @description The grid Size.
-**/  
-int* copyGrid (int grid[], int gridSize) {
+/****/
+int computerMove (int grid[], int gridSize) {
 
-  int i = 0;
-  int* copyArray = (int*) malloc(gridSize * sizeof(int));
+  int bestVal = -1000;
+  int bestMove = -1;
 
-  while (i < gridSize) {
-    
-    copyArray[i] = grid[i];
-    i++;
+  for (int i=0; i<gridSize; i++) {
+
+    if (grid[i] == 0) {
+
+      grid[i] = 2;
+
+      int moveVal = minimax(grid, gridSize, 2);
+      grid[i] = 0;
+
+      if (moveVal > bestVal) {
+
+        bestMove = i;
+        bestVal = moveVal;
+      }
+    }
   }
 
-  return copyArray;
-}
-
-void arrayCopy (int array[], int grid[], int gridSize) {
-
-  int i = 0;
-  while (i < gridSize) {
-
-    array[i] = grid[i];
-    i++;
-  }
+  printf("%d best", bestMove);
+  grid[bestMove] = 2;
+  return bestMove;
 }
 
 
@@ -380,10 +468,9 @@ int main () {
   int gridSize = 9;
   // the grid to store the tic tac toe game
   int grid[gridSize];
-  int copyArray[gridSize];
 
   // initializing the grid with 0s.
-  initializeGrid(grid, gridSize);
+  initializeGrid(grid, gridSize, 0);
 
   while (gameInfo == 0) {
 
@@ -393,11 +480,15 @@ int main () {
 
       display(grid, gridSize);
       input(grid, gridSize);
-      arrayCopy(copyArray, grid, gridSize);
-      minimax(copyArray ,gridSize, 2);
       system("clear");
     }
+
     setGameInfo(grid, gridSize, 1);
+    if (gameInfo == 0) {
+
+      computerMove(grid, gridSize);
+      setGameInfo(grid, gridSize, 2);
+    }
   }
 
   display(grid, gridSize);
