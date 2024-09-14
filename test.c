@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #define User_Input 1
 #define Computer_Input 2
@@ -12,23 +13,46 @@
 
 
 
+void initializeGrid (int grid[], int gridSize, int value);
 void display (int grid[], int gridSize);
 int evaluate (int grid[], int gridSize, int move);
 int checkDraw (int grid[], int gridSize);
 int freeCells (int grid[], int gridSize);
 int userInput (int grid[], int gridSize);
 int computerInput (int grid[], int gridSize);
+void displayStatus (int code);
+void displayResult (int code);
 
 
 
 int main () {
+
+  int inputStatus = -111;
+  int gameStatus = 0;
 
   // the size of the grid for tic tac toe
   int gridSize = 9;
   // the grid to store the tic tac toe game
   int grid[gridSize];
 
-  display(grid, gridSize);  
+  // initializing grid
+  initializeGrid(grid, gridSize, 0);
+
+  while (gameStatus == 0) {
+
+    inputStatus = -111;
+
+    while (inputStatus != Normal_Input) {
+      
+      displayStatus(inputStatus);
+      display(grid, gridSize);
+      inputStatus = userInput(grid, gridSize);
+    }
+    gameStatus = evaluate(grid, gridSize, 1);
+  }
+
+  display(grid, gridSize);
+  displayResult(gameStatus);
 }
 
 
@@ -126,7 +150,7 @@ int evaluate (int grid[], int gridSize, int move) {
 }
 
 
-// WARN: The function would give an incorrect output if called before
+// WARN: The function would return an incorrect value if called before
 // evaluate function, because it does not check if any player has won yet.
 int isDraw (int grid[], int gridSize) {
 
@@ -175,7 +199,7 @@ int freeCells (int grid[], int gridSize) {
  * @type int
  * @description The size of the grid.
 **/
-int input (int grid[], int gridSize) {
+int userInput (int grid[], int gridSize) {
 
   char buffer[256];
   int input, result; 
@@ -199,3 +223,54 @@ int input (int grid[], int gridSize) {
   return Normal_Input;
 }
 
+
+/**
+ * @function initializeGrid
+ * @return void
+ * @description Function to fill in the provided grid with
+ * initial values.
+ *
+ * @param value
+ * @type int
+ * @description Value to be initialized with
+ * @param grid
+ * @type int[]
+ * @description The grid to fill in with the initial values.
+ *
+ * @param gridSize
+ * @type int
+ * @description The size of the grid.
+**/
+void initializeGrid (int grid[], int gridSize, int value) {
+
+  for (int i=0; i<gridSize; i++) {
+
+    // fill in with value to indicate no input
+    grid[i] = value;
+  }
+}
+
+
+void displayStatus (int code) {
+
+  if (code == Redundant_Input)
+    printf("\nThe input is redundant. Try again..\n");
+  else if (code == Invalid_Input) 
+    printf("\nThe input is invalid. Try again..\n");
+  else if (code == NaN_Input)
+    printf("\nThe input is not an integer. Try again..\n");
+}
+
+
+void displayResult (int code) {
+
+  if (code == Computer_Wins) {
+
+    printf("\n\nThe Computer Wins!");
+    exit(0);
+  } else if (code == User_Wins) {
+
+    printf("\n\nThe User Wins!");
+    exit(0);
+  }
+}
