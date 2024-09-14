@@ -2,40 +2,86 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int bestScore;
+#define User_Input 1
+#define Computer_Input 2
+#define User_Wins -1
+#define Computer_Wins 1
+#define Normal_Input 0
+#define Invalid_Input 1
+#define Redundant_Input 2
+#define NaN_Input 3
+
+
+
+void initializeGrid (int grid[], int gridSize, int value);
+void display (int grid[], int gridSize);
+int evaluate (int grid[], int gridSize, int move);
+int isDraw (int grid[], int gridSize);
+int freeCells (int grid[], int gridSize);
+int userInput (int grid[], int gridSize);
+int computerInput (int grid[], int gridSize);
+void displayStatus (int code);
+void displayResult (int code, int grid[], int gridSize);
+int minimax (int grid[], int gridSize, int move, int depth);
+
+
+int main () {
+
+  system("clear");
+
+  int inputStatus = -111;
+  int gameStatus = 0;
+
+  // the size of the grid for tic tac toe
+  int gridSize = 9;
+  // the grid to store the tic tac toe game
+  int grid[gridSize];
+
+  // initializing grid
+  initializeGrid(grid, gridSize, 0);
+
+  while (gameStatus == 0) {
+
+    inputStatus = -111;
+
+    while (inputStatus != Normal_Input) {
+      
+      displayStatus(inputStatus);
+      display(grid, gridSize);
+      inputStatus = userInput(grid, gridSize);
+      system("clear");
+    }
+
+    gameStatus = evaluate(grid, gridSize, 1);
+    displayResult(gameStatus, grid, gridSize);
+    // TODO: Merge isDraw function into the evaluate function.
+    if (isDraw(grid, gridSize) == 1) {
+
+      display(grid, gridSize);
+      printf("\nDraw.");
+      exit(0);
+    }
+    computerInput(grid, gridSize);
+    gameStatus = evaluate(grid, gridSize, 2);
+    displayResult(gameStatus, grid, gridSize);
+    if (isDraw(grid, gridSize) == 1) {
+
+      display(grid, gridSize);
+      printf("\nDraw.");
+      exit(0);
+    }
+  }
+}
 
 
 /**
- * @var inputInfo
- * @type int
- * @description Tells about the status of the input received from the player.
- * If inputInfo is -
- * 0 -> Normal Input
- * 1 -> Input Exceeds or Preceeds the available grid index.
- * 2 -> The input is redundant.
- * 3 -> The input is not of type int.
-**/
-int inputInfo = -1;
-
-/**
- * @var gameInfo
- * @type int
- * @description Tells about the state of the game.
- * If the the gameInfo is:
- * 1 --> Then the player has won
- * 2 --> Then the computer has won
- * 3 --> Then the game ended in draw
- * 0 --> Still Going On.
-**/
-int gameInfo = 0;
-
-
-
-/**
- * @function isGridFilled
- * @return int
- * @description Checks if the grid has been filled completely.
- * It return the number of empty cells.
+ * @function display
+ * @return void
+ * @description Prints the grid after formatting it
+ * according to the inputs.
+ * 0 is formatted as '*' meaning no input.
+ * 1 is formatted as 'O' meaning computer input 
+ * 2 is formatted as 'X' meaning user input.
  *
  * @params grid
  * @type int[]
@@ -45,17 +91,185 @@ int gameInfo = 0;
  * @type int
  * @description The size of the grid.
 **/
-int isGridFilled (int grid[], int gridSize) {
+void display (int grid[], int gridSize) {
+
+  // displaying the matrix
+  for (int i=0; i<gridSize; i++) {
+
+    // end of row
+    if (i % 3 == 0)
+      printf("\n");
+
+    if (grid[i] == Computer_Input)
+      printf("\tO");
+    else if (grid[i] == User_Input)
+      printf("\tX");
+    else
+      printf("\t*");
+  }
+}
+
+
+/**
+ * @function evaluate
+ * @return int 
+ * @description Return the information about the game.
+ * If the return value is:
+ * -1 --> Then the player has won
+ * +1 --> Then the computer has won
+ * 0 --> The game continues
+ *
+ * @params grid
+ * @type int[]
+ * @description The grid where the input would be stored.
+ *
+ * @params gridSize
+ * @type int
+ * @description The size of the grid.
+ *
+ * @params move
+ * @type int
+ * @description Denotes the current move positions, ie, whose move it is.
+ * If it is:
+ * 1 --> Player's Move
+ * 2 --> Computer's Move
+**/
+int evaluate (int grid[], int gridSize, int move) {
+
+  // Check rows for a win
+  for (int row = 0; row < 3; row++) {
+      if (grid[3*row] == grid[3*row + 1] && grid[3*row + 1] == grid[3*row + 2]) {
+          if (grid[3*row] == User_Input) return User_Wins;  // Player (O) wins
+          else if (grid[3*row] == Computer_Input) return Computer_Wins;  // Computer (X) wins
+      }
+  }
+
+  // Check columns for a win
+  for (int col = 0; col < 3; col++) {
+      if (grid[col] == grid[col + 3] && grid[col + 3] == grid[col + 6]) {
+          if (grid[col] == User_Input) return User_Wins;  // Player (O) wins
+          else if (grid[col] == Computer_Input) return Computer_Wins;  // Computer (X) wins
+      }
+  }
+
+  // Check primary diagonal (top-left to bottom-right)
+  if (grid[0] == grid[4] && grid[4] == grid[8]) {
+      if (grid[0] == User_Input) return User_Wins;  // Player (O) wins
+      else if (grid[0] == Computer_Input) return Computer_Wins;  // Computer (X) wins
+  }
+
+  // Check secondary diagonal (top-right to bottom-left)
+  if (grid[2] == grid[4] && grid[4] == grid[6]) {
+      if (grid[2] == User_Input) return User_Wins;  // Player (O) wins
+      else if (grid[2] == Computer_Input) return Computer_Wins;  // Computer (X) wins
+  }
+
+  return 0;
+}
+
+
+/**
+ * @function isDraw
+ * @return int
+ * @description Checks whether the game is drawn or not. Evaluate funtion
+ * should be called prior to calling isDraw function.
+ *
+ * If the return is:
+ * 1 --> Game is drawn
+ * 0 --> Game not drawn
+ *
+ * @params grid
+ * @type int[]
+ * @description The tic tac toe grid.
+ *
+ * @params gridSize
+ * @type int
+ * @description The tictactoe grid size.
+**/
+// WARN: The function would return an incorrect value if called before
+// evaluate function, because it does not check if any player has won yet.
+int isDraw (int grid[], int gridSize) {
+
+  // grid is empty, hence game has not drawn yet
+  if (freeCells(grid, gridSize) != 0)
+    return 0;
+
+  // otherwise the grid is full, and the game has been drawn. 
+  return 1;
+}
+
+
+/**
+ * @function freeCells
+ * @return int
+ * @description Returns the number of empty cells.
+ *
+ * @params grid
+ * @type int[]
+ * @description The tic tac toe grid.
+ *
+ * @params gridSize
+ * @type int
+ * @description The tictactoe grid size.
+**/
+int freeCells (int grid[], int gridSize) {
 
   int count = 0;
 
+  // counting free cells
   for (int i=0; i<gridSize; i++) {
 
     if (grid[i] == 0)
-      count++;
+      count += 1;
   }
 
   return count;
+}
+
+
+/**
+ * @function input
+ * @return 
+ * @description Function to take input from the user.
+ * Stores in the provided grid and checks for its validity.
+ * Returns the status of input.
+ *
+ * If the return value is -
+ * 0 -> Normal Input
+ * 1 -> Input Exceeds or Preceeds the available grid index.
+ * 2 -> The input is redundant.
+ * 3 -> The input is not of type int.
+ *
+ * @params grid
+ * @type int[]
+ * @description The grid where the input would be stored.
+ *
+ * @params gridSize
+ * @type int
+ * @description The size of the grid.
+**/
+int userInput (int grid[], int gridSize) {
+
+  char buffer[256];
+  int input, result; 
+
+  printf("\n\nYour Move: ");
+
+  if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+
+    result = sscanf(buffer, "%d" ,&input);
+    if (result != 1) 
+      return NaN_Input;       // input not of type int
+  }
+
+  if (input > gridSize || input < 1)
+    return Invalid_Input;     // input value exceeds or preceeds the space available in the grid.
+  else if (grid[input-1] != 0)
+    return Redundant_Input;     // input is redundant
+   
+  // provided input was valid
+  grid[input-1] = 1;
+  return Normal_Input;
 }
 
 
@@ -87,410 +301,166 @@ void initializeGrid (int grid[], int gridSize, int value) {
 
 
 /**
- * @function input
- * @return int (no-value)
- * @description Function to take input from the user.
- * Stores in the provided grid and checks for its validity.
- * Also modifies the global variable inputInfo
- *
- * @params grid
- * @type int[]
- * @description The grid where the input would be stored.
- *
- * @params gridSize
- * @type int
- * @description The size of the grid.
-**/
-int input (int grid[], int gridSize) {
-
-  char buffer[256];
-  int input, result; 
-
-  printf("\n\nYour Move: ");
-
-  if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
-
-    result = sscanf(buffer, "%d" ,&input);
-    if (result != 1) {
-
-      // input not of type int
-      inputInfo = 3;
-      return 0;
-    }
-  }
-
-  if (input > gridSize || input < 1) {
-
-    // input value exceeds or preceeds the space available in the grid.
-    inputInfo = 1;
-    return 0;
-  } else if (grid[input-1] != 0) {
-
-    // input is redundant
-    inputInfo = 2;
-    return 0;
-  } else {
-
-    // normal input was provided and the value can be assigned to the grid.
-    inputInfo = 0;
-    grid[input-1] = 1;
-    return 0;
-  }
-}
-
-
-/**
- * @function display
+ * @function displayStatus
  * @return void
- * @description Prints the grid after formatting it
- * according to the inputs.
- * 0 is formatted as '*' meaning no input.
- * 1 is formatted as 'O' meaning computer input 
- * 2 is formatted as 'X' meaning user input.
+ * @description Displays the status of the input.
+ *
+ * @params code
+ * @type int
+ * @description The input status code.
+**/
+void displayStatus (int code) {
+
+  if (code == Redundant_Input)
+    printf("\nThe input is redundant. Try again..\n");
+  else if (code == Invalid_Input) 
+    printf("\nThe input is invalid. Try again..\n");
+  else if (code == NaN_Input)
+    printf("\nThe input is not an integer. Try again..\n");
+}
+
+
+/**
+ * @function displayResult
+ * @return void
+ * @description Displays the result of the game along with the grid,
+ * one last time.
+ *
+ * @params code
+ * @type int
+ * @description The game status code.
  *
  * @params grid
  * @type int[]
- * @description The grid where the input would be stored.
+ * @description The tic tac toe grid.
  *
  * @params gridSize
  * @type int
- * @description The size of the grid.
+ * @description The tictactoe grid size.
 **/
-void display (int grid[], int gridSize) {
+void displayResult (int code, int grid[], int gridSize) {
 
-  // checking if there were any errors in the input.
-  if (inputInfo == 1)
-    printf("Input Exceeds or Preceeds the available grid. Try again..\n");
-  else if (inputInfo == 2)
-    printf("Input is Redundant. Try again..\n");
-  else if (inputInfo == 3) 
-    printf("Input is not a number. Try again..\n");
+  if (code == Computer_Wins) {
 
-  // displaying the matrix
-  for (int i=0; i<gridSize; i++) {
+    display(grid, gridSize);
+    printf("\n\nThe Computer Wins!");
+    exit(0);
+  } else if (code == User_Wins) {
 
-    if (i % 3 == 0)
-      printf("\n");
-
-    if (grid[i] == 0)
-      printf("\t*");
-    else if (grid[i] == 1)
-      printf("\tX");
-    else
-      printf("\tO");
-  }
-
-  // if the game ends then the ending msg is printed.
-  if (gameInfo == 1) {
-
-    // the player wins
-    printf("\nYou win!");
-  } else if (gameInfo == 2) {
-
-    // the computer wins
-    printf("\nThe Computer wins!");
-  } else if (gameInfo == 3) {
-
-    printf("\nDraw");
+    printf("\n\nThe User Wins!");
+    exit(0);
   }
 }
 
 
 /**
- * @function setGameInfo
- * @return int (used by minimax algo)
- * @description Sets the variable game info according to the state of the game.
- * If the state is:
- * 1 --> Then the player has won
- * 2 --> Then the computer has won
- * 3 --> Then the game ended in draw
- * 0 --> Still Going On.
- *
- * @params grid
- * @type int[]
- * @description The grid where the input would be stored.
- *
- * @params gridSize
- * @type int
- * @description The size of the grid.
+ * @function minimax
+ * @return int
+ * @description Implementation of the minimax algorithm to decide the most 
+ * optimal solution for the AI.
  *
  * @params move
  * @type int
- * @description Denotes the current move positions, ie, whose move it is.
- * If it is:
- * 1 --> Player's Move
- * 2 --> Computer's Move
+ * @description Denotes whose move it is.
+ *
+ * @params depth
+ * @type int
+ * @description Denotes the depth at which the minimax algorithm
+ * has reached.
+ *
+ * @params grid
+ * @type int[]
+ * @description The tic tac toe grid.
+ *
+ * @params gridSize
+ * @type int
+ * @description The tictactoe grid size.
 **/
-int setGameInfo (int grid[], int gridSize, int move) {
+int minimax (int grid[], int gridSize, int move, int depth) {
 
-  if (isGridFilled(grid, gridSize) == 0) {
+  move = (move%2 == 0) ? Computer_Input : User_Input;
 
-    // the game ends in a draw
-    gameInfo = 3;
-    // a draw game is a neutral result, so the minimax algo would it treat it as such
-    return 0; 
-  } else {
-
-    // check the columns
-    for (int i=0; i<3; i++) {
-
-      if (grid[i] != 0) {
-
-        if(grid[i] == grid[i+3] && grid[i] == grid[i+6]) {
-          
-          if (move == 1) {
-
-            gameInfo = 1;
-            // loss for the computer
-            return -1;
-          } else if (move == 2) {
-        
-            gameInfo = 2;
-            return 1;
-          }
-        }
-      }
-    }
-
-    //check rows
-    for (int i=0; i<gridSize; i=i+3) {
-
-      if (grid[i] != 0) {
-
-        if(grid[i] == grid[i+1] && grid[i] == grid[i+2]) {
-
-          if (move == 1) {
-
-            gameInfo = 1;
-            // loss for the computer
-            return -1;
-          } else if (move == 2) {
-        
-            gameInfo = 2;
-            return 1;
-          }
-        }
-      }
-    }
-
-    // check the primary and secondary diagonal
-    int i = 0;
-    if (grid[i] == grid[i+4] && grid[i] == grid[i+8] && grid[i] != 0) {
-     
-      if (move == 1) {
-
-        gameInfo = 1;
-        // loss for the computer
-        return -1;
-      } else if (move == 2) {
-        
-        gameInfo = 2;
-        return 1;
-      }
-    }
-
-    i = 2;
-    if (grid[i] == grid[i+2] && grid[i] == grid[i+4] && grid[i] != 0) {
-     
-      if (move == 1) {
-
-        gameInfo = 1;
-        // loss for the computer
-        return -1;
-      } else if (move == 2) {
-        
-        gameInfo = 2;
-        return 1;
-      }
-    }
-  }
-
-  return -2;
-}
-
-// Evaluate the board and return score: +1 (X wins), -1 (O wins), 0 (no winner)
-int evaluate(int grid[], int gridSize, int move) {
-
-  
-  /*if (isGridFilled(grid, gridSize) != 0) {*/
-
-    // check the columns
-    for (int i=0; i<3; i++) {
-
-      if (grid[i] != 0) {
-
-        if(grid[i] == grid[i+3] && grid[i] == grid[i+6]) {
-          
-          if (move == 1) {
-
-            // loss for the computer
-            return -1;
-          } else if (move == 2) {
-        
-            return 1;
-          }
-        }
-      }
-    }
-
-    //check rows
-    for (int i=0; i<gridSize; i=i+3) {
-
-      if (grid[i] != 0) {
-
-        if(grid[i] == grid[i+1] && grid[i] == grid[i+2]) {
-
-          if (move == 1) {
-
-            // loss for the computer
-            return -1;
-          } else if (move == 2) {
-        
-            return 1;
-          }
-        }
-      }
-    }
-
-    // check the primary and secondary diagonal
-    int i = 0;
-    if (grid[i] == grid[i+4] && grid[i] == grid[i+8] && grid[i] != 0) {
-     
-      if (move == 1) {
-
-        // loss for the computer
-        return -1;
-      } else if (move == 2) {
-        
-        return 1;
-      }
-    }
-
-    i = 2;
-    if (grid[i] == grid[i+2] && grid[i] == grid[i+4] && grid[i] != 0) {
-     
-      if (move == 1) {
-
-        // loss for the computer
-        return -1;
-      } else if (move == 2) {
-        
-        return 1;
-      }
-    }
-  /*} else {*/
-
-    // a draw game is a neutral result, so the minimax algo would it treat it as such
-    return 0;
-  /*}*/
-
-}
-
-
-/****/
-int minimax (int grid[], int gridSize, int move) {
-
-  move = move%2 == 0 ? 2 : 1;
   int score = evaluate(grid, gridSize, move);
 
-  if (score == 0) {
+  if (score == Computer_Wins) {
+
+    return 10 - depth;
+  } else if (score == User_Wins) {
+
+    return depth - 10;
+  } else if (isDraw(grid, gridSize) == 1) {
+
+    return 0;
+  }
 
   if (move%2 == 0) {
 
-    bestScore = -1000;
-
+    int bestScore = -1000;
     for (int i=0; i<gridSize; i++) {
 
       if (grid[i] == 0) {
 
-        grid[i] = 2;
-        int score = minimax(grid, gridSize, move+1);
+        grid[i] = Computer_Input;
+        int score = minimax(grid, gridSize, move+1, depth+1);
         grid[i] = 0;
         bestScore = (score > bestScore) ? score : bestScore;
       }
     }
+    return bestScore;
   } else {
 
-    bestScore = 1000;
-
+    int bestScore = 1000;
     for (int i=0; i<gridSize; i++) {
 
       if (grid[i] == 0) {
 
-        grid[i] = 1;
-        int score = minimax(grid, gridSize, move+1);
+        grid[i] = User_Input;
+        int score = minimax(grid, gridSize, move+1, depth+1);
         grid[i] = 0;
         bestScore = (score < bestScore) ? score : bestScore;
       }
     }
+    return bestScore;
   }
-  }
-
-  return bestScore;
 }
 
 
-/****/
-int computerMove (int grid[], int gridSize) {
+/**
+ * @function computerInput
+ * @return int
+ * @description Makes the computer's move, optimally, 
+ * using the minimax algorithm.
+ *
+ * @params grid
+ * @type int[]
+ * @description The tic tac toe grid.
+ *
+ * @params gridSize
+ * @type int
+ * @description The tictactoe grid size.
+**/
+int computerInput (int grid[], int gridSize) {
 
-  int bestVal = -1000;
-  int bestMove = -1;
+  int bestScore = -1000;
+  int bestMove = -111;
 
   for (int i=0; i<gridSize; i++) {
 
     if (grid[i] == 0) {
 
-      grid[i] = 2;
-
-      int moveVal = minimax(grid, gridSize, 2);
+      grid[i] = Computer_Input;
+      int score = minimax(grid, gridSize, 1, 0);
       grid[i] = 0;
 
-      if (moveVal > bestVal) {
+      if (score > bestScore) {
 
+        bestScore = score;
         bestMove = i;
-        bestVal = moveVal;
       }
     }
   }
 
-  printf("%d best", bestMove);
-  grid[bestMove] = 2;
+  grid[bestMove] = Computer_Input;
   return bestMove;
 }
 
-
-int main () {
-
-  // A call to clear the screen
-  system("clear");
-
-  // the size of the grid for tic tac toe
-  int gridSize = 9;
-  // the grid to store the tic tac toe game
-  int grid[gridSize];
-
-  // initializing the grid with 0s.
-  initializeGrid(grid, gridSize, 0);
-
-  while (gameInfo == 0) {
-
-    inputInfo = -1;
-
-    while (inputInfo != 0 || inputInfo == -1) {
-
-      display(grid, gridSize);
-      input(grid, gridSize);
-      system("clear");
-    }
-
-    setGameInfo(grid, gridSize, 1);
-    if (gameInfo == 0) {
-
-      computerMove(grid, gridSize);
-      setGameInfo(grid, gridSize, 2);
-    }
-  }
-
-  display(grid, gridSize);
-  printf("\n");
-}
