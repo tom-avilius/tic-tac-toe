@@ -25,11 +25,13 @@ int freeCells (int grid[], int gridSize);
 int userInput (int grid[], int gridSize);
 int computerInput (int grid[], int gridSize);
 void displayStatus (int code);
-void displayResult (int code);
+void displayResult (int code, int grid[], int gridSize);
 int minimax (int grid[], int gridSize, int move, int depth);
 
 
 int main () {
+
+  system("clear");
 
   int inputStatus = -111;
   int gameStatus = 0;
@@ -51,22 +53,27 @@ int main () {
       displayStatus(inputStatus);
       display(grid, gridSize);
       inputStatus = userInput(grid, gridSize);
+      system("clear");
     }
+
     gameStatus = evaluate(grid, gridSize, 1);
+    displayResult(gameStatus, grid, gridSize);
+    // TODO: Merge isDraw function into the evaluate function.
     if (isDraw(grid, gridSize) == 1) {
 
-      printf("The game is draw.");
+      display(grid, gridSize);
+      printf("\nDraw.");
       exit(0);
     }
-    displayResult(gameStatus);
     computerInput(grid, gridSize);
     gameStatus = evaluate(grid, gridSize, 2);
+    displayResult(gameStatus, grid, gridSize);
     if (isDraw(grid, gridSize) == 1) {
 
-      printf("The game is draw.");
+      display(grid, gridSize);
+      printf("\nDraw.");
       exit(0);
     }
-    displayResult(gameStatus);
   }
 }
 
@@ -277,10 +284,11 @@ void displayStatus (int code) {
 }
 
 
-void displayResult (int code) {
+void displayResult (int code, int grid[], int gridSize) {
 
   if (code == Computer_Wins) {
 
+    display(grid, gridSize);
     printf("\n\nThe Computer Wins!");
     exit(0);
   } else if (code == User_Wins) {
