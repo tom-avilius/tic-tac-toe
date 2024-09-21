@@ -1,4 +1,17 @@
 
+
+/**
+ * This is the tictactoe.c file which contains the code to a normal tic tac toe game on a 3*3
+ * grid. The user gets the first chance to play. For the computer AI, minimax algorithm is 
+ * implemented.
+ *
+ * @File Contains the tic tac toe game logic.
+ * @Author Tom Avilius <tomavilius@tomavilius.in>
+ *
+ * @Package Solstice v2
+ * @License MIT License
+**/
+
 #include <stdio.h>
 #include <stdlib.h>
 
