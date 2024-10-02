@@ -7,3 +7,4 @@ Console based tic tac toe written in C. It uses the minimax algorithm.
 - [ ] Toss System
 - [ ] Start from a random position.
 - [ ] Randomize AI advantage.
+- [ ] Implement Alpha Beta Pruning
